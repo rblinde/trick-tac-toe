@@ -11,3 +11,7 @@ body {
   margin: 0;
   background: #eae2b7;
 }
+
+#container.grab {
+  cursor: grab;
+}
