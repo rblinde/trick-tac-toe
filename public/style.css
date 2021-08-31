@@ -4,6 +4,10 @@
 
 html, body {
   height: 100vh;
-  margin: 0;
   overflow: hidden;
+}
+
+body {
+  margin: 0;
+  background: #eae2b7;
 }
