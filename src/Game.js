@@ -1,8 +1,12 @@
+import * as constants from './constants';
+
 class Game {
   constructor() {
     this.boardElem = document.getElementById('board');
     this.pieceElems = [...document.querySelectorAll('.pieces input[type="radio"]')];
     this.tileElems = [...this.boardElem.children];
+    this.messageElem = document.getElementById('message');
+
     this.board = Array(9).fill(0);
     this.currentPlayer = 'red';
     this.selectedPiece = null;
@@ -75,6 +79,12 @@ class Game {
     this.currentPlayer = this.currentPlayer === 'red' ? 'blue' : 'red';
     this.selectedPiece.parentNode.classList.add('hide');
     this.selectedPiece = null;
+
+    // Check for winner
+    const winner = this.checkWin();
+    if (winner) {
+      this.showEndMessage(winner + ' wins!');
+    }
   }
 
 
@@ -92,9 +102,41 @@ class Game {
 
 
   /**
+   * Checks if current board has a winner
+   * @returns {String|Boolean} winning color or false
+   */
+  checkWin() {
+    for (const [x, y, z] of constants.WIN_MAP) {
+      if (
+        this.board[x].player &&
+        this.board[x].player === this.board[y].player &&
+        this.board[x].player === this.board[z].player
+      ) {
+        return this.board[x].player;
+      }
+    }
+
+    return false;
+  }
+
+
+  /**
+   * Shows message in center of screen to indicate game over
+   * @param {String} text
+   */
+  showEndMessage(text = 'Game over!') {
+    this.messageElem.textContent = text;
+    this.messageElem.dataset.text = text;
+    this.messageElem.classList.remove('hide');
+  }
+
+
+  /**
    * Starts a game of trick-tac-toe
    */
   start() {
+    this.messageElem.classList.add('hide');
+
     for (const piece of this.pieceElems) {
       piece.checked = false;
     }
