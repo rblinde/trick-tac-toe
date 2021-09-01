@@ -23,6 +23,11 @@ body {
   background: var(--lightgreen);
 }
 
+/* Helpers */
+.hide {
+  display: none;
+}
+
 /* Board */
 #board {
   display: grid;
@@ -40,6 +45,10 @@ body {
 }
 
 .tile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   background: var(--lightgreen);
   cursor: pointer;
 }
@@ -47,7 +56,7 @@ body {
 /* Pieces container */
 .pieces {
   position: absolute;
-  top: 16px;
+  top: 8px;
   left: 50%;
 
   display: flex;
@@ -58,7 +67,7 @@ body {
 }
 
 .pieces--red {
-  bottom: 16px;
+  bottom: 8px;
   top: auto;
 }
 
@@ -71,9 +80,10 @@ body {
   display: none;
 }
 
+.ppiece,
 .piece label {
   display: inline-block;
-  margin: 0 4px;
+  margin: 0 2px;
 
   background: var(--blue);
   border-radius: 50%;
@@ -89,21 +99,29 @@ body {
   border: 4px solid var(--red);
 }
 
+.ppiece--3,
 .piece--l label {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
 }
 
+.ppiece--2,
 .piece--m label {
   width: 40px;
   height: 40px;
 }
 
+.ppiece--1,
 .piece--s label {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
 }
 
+.ppiece--red,
 .pieces--red .piece label {
   background: var(--red);
+}
+
+.ppiece--blue {
+  background: var(--blue);
 }
