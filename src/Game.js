@@ -6,9 +6,10 @@ class Game {
     this.pieceElems = [...document.querySelectorAll('.pieces input[type="radio"]')];
     this.tileElems = [...this.boardElem.children];
     this.messageElem = document.getElementById('message');
+    this.playBtn = document.getElementById('play-button');
 
     this.isPlaying = false;
-    this.board = Array(9).fill({ player: null, size: 0 });
+    this.board = [];
     this.currentPlayer = null;
     this.selectedPiece = null;
 
@@ -24,6 +25,7 @@ class Game {
     window.addEventListener('resize', () => this.handleWindowResize(), false);
     this.pieceElems.forEach(piece => piece.addEventListener('click', (e) => this.handlePieceClick(e), false));
     this.tileElems.forEach(tile => tile.addEventListener('click', (e) => this.handleTileClick(e), true));
+    this.playBtn.addEventListener('click', () => this.start(), false);
   }
 
 
@@ -111,7 +113,7 @@ class Game {
     }
 
     const message = winner ? winner + ' wins!' : 'Draw!';
-    this.showMessage(message);
+    this.showMessage(message, true);
     this.isPlaying = false;
   }
 
@@ -161,13 +163,20 @@ class Game {
 
   /**
    * Shows message in center of screen to indicate game over
-   * @param {String} text
+   * Also shows button if `end` is true
+   * @param {String}  text
+   * @param {Boolean} end
    */
-  showMessage(text) {
+  showMessage(text, end) {
     this.messageElem.textContent = text;
     this.messageElem.dataset.text = text;
     this.messageElem.classList.remove('hide');
-    setTimeout(() => this.messageElem.classList.add('hide'), 1000);
+    setTimeout(() => {
+      this.messageElem.classList.add('hide');
+      if (end) {
+        this.playBtn.classList.remove('hide');
+      }
+    }, 1000);
   }
 
 
@@ -175,12 +184,19 @@ class Game {
    * Starts a game of trick-tac-toe
    */
   start() {
+    this.board = Array(9).fill({ player: null, size: 0 });
     this.isPlaying = true;
     this.currentPlayer = Math.random() < 0.5 ? 'red' : 'blue';
+    this.playBtn.classList.add('hide');
     this.showMessage(`${this.currentPlayer} starts!`);
 
     for (const piece of this.pieceElems) {
       piece.checked = false;
+      piece.parentElement.classList.remove('hide');
+    }
+
+    for (const tile of this.tileElems) {
+      tile.textContent = null;
     }
   }
 }
