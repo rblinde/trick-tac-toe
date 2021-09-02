@@ -7,7 +7,8 @@ class Game {
     this.tileElems = [...this.boardElem.children];
     this.messageElem = document.getElementById('message');
 
-    this.board = Array(9).fill(0);
+    this.isPlaying = false;
+    this.board = Array(9).fill({ player: null, size: 0 });
     this.currentPlayer = 'red';
     this.selectedPiece = null;
 
@@ -45,7 +46,7 @@ class Game {
   handlePieceClick(e) {
     const color = e.target.parentNode.parentNode.dataset.color;
 
-    if (color !== this.currentPlayer) {
+    if (color !== this.currentPlayer || !this.isPlaying) {
       e.target.checked = false;
       return false;
     }
@@ -59,7 +60,7 @@ class Game {
    * @param {Event} e
    */
   handleTileClick(e) {
-    if (!this.selectedPiece) {
+    if (!this.selectedPiece || !this.isPlaying) {
       return false;
     }
 
@@ -80,11 +81,8 @@ class Game {
     this.selectedPiece.parentNode.classList.add('hide');
     this.selectedPiece = null;
 
-    // Check for winner
-    const winner = this.checkWin();
-    if (winner) {
-      this.showEndMessage(winner + ' wins!');
-    }
+    // Check for possible game end
+    this.checkGameEnded();
   }
 
 
@@ -98,6 +96,23 @@ class Game {
     piece.classList.add('ppiece', `ppiece--${size}`, `ppiece--${this.currentPlayer}`);
     this.tileElems[index].textContent = null;
     this.tileElems[index].appendChild(piece);
+  }
+
+
+  /**
+   * Checks if game is either won or no moves are possible
+   */
+  checkGameEnded() {
+    const winner = this.checkWin();
+    const noMoves = this.checkNoMoves();
+
+    if (!winner && !noMoves) {
+      return false;
+    }
+
+    const message = winner ? winner + ' wins!' : 'Draw!';
+    this.showEndMessage(message);
+    this.isPlaying = false;
   }
 
 
@@ -121,10 +136,34 @@ class Game {
 
 
   /**
+   * Checks if current board has no possible moves
+   * @returns {Boolean}
+   */
+  checkNoMoves() {
+    const remainingPieces = this.getRemainingPieces();
+    const highestPiece = Math.max(...remainingPieces);
+    const filter = place => place.size < highestPiece && place.player !== this.currentPlayer;
+    const possibleOptions = this.board.filter(filter);
+    return !possibleOptions.length;
+  }
+
+
+  /**
+   * Returns remaining pieces for current player
+   * @returns {Set}
+   */
+  getRemainingPieces() {
+    const pieceElems = [...document.querySelectorAll(`.pieces--${this.currentPlayer} .piece:not(.hide)`)];
+    const mapper = piece => parseInt(piece.querySelector('input').value);
+    return [...new Set(pieceElems.map(mapper))];
+  }
+
+
+  /**
    * Shows message in center of screen to indicate game over
    * @param {String} text
    */
-  showEndMessage(text = 'Game over!') {
+  showEndMessage(text) {
     this.messageElem.textContent = text;
     this.messageElem.dataset.text = text;
     this.messageElem.classList.remove('hide');
@@ -135,6 +174,7 @@ class Game {
    * Starts a game of trick-tac-toe
    */
   start() {
+    this.isPlaying = true;
     this.messageElem.classList.add('hide');
 
     for (const piece of this.pieceElems) {
