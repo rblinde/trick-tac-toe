@@ -9,7 +9,7 @@ class Game {
 
     this.isPlaying = false;
     this.board = Array(9).fill({ player: null, size: 0 });
-    this.currentPlayer = 'red';
+    this.currentPlayer = null;
     this.selectedPiece = null;
 
     this.addEventListeners();
@@ -111,7 +111,7 @@ class Game {
     }
 
     const message = winner ? winner + ' wins!' : 'Draw!';
-    this.showEndMessage(message);
+    this.showMessage(message);
     this.isPlaying = false;
   }
 
@@ -163,10 +163,11 @@ class Game {
    * Shows message in center of screen to indicate game over
    * @param {String} text
    */
-  showEndMessage(text) {
+  showMessage(text) {
     this.messageElem.textContent = text;
     this.messageElem.dataset.text = text;
     this.messageElem.classList.remove('hide');
+    setTimeout(() => this.messageElem.classList.add('hide'), 1000);
   }
 
 
@@ -175,7 +176,8 @@ class Game {
    */
   start() {
     this.isPlaying = true;
-    this.messageElem.classList.add('hide');
+    this.currentPlayer = Math.random() < 0.5 ? 'red' : 'blue';
+    this.showMessage(`${this.currentPlayer} starts!`);
 
     for (const piece of this.pieceElems) {
       piece.checked = false;
