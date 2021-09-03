@@ -30,7 +30,7 @@ class Game {
 
 
   /**
-   * Resizes canvas to fill screen completely
+   * Resizes board to remain scare
    */
   handleWindowResize() {
     const screenSize = Math.min(window.innerWidth, window.innerHeight);
